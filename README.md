@@ -55,9 +55,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ### 🔗 Contact
 
-### 🔗 Contact
-
-<img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg" width="30"> [Discord](https://discord.com/users/1012249571436548136)
+[Discord](https://discord.com/users/1012249571436548136)
 [Github](https://github.com/Krex381)
 
 ---
