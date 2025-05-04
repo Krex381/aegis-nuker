@@ -56,6 +56,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ### 🔗 Contact
 
 [Discord](https://discord.com/users/1012249571436548136)
+<br>
 [Github](https://github.com/Krex381)
 
 ---
