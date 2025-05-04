@@ -565,16 +565,3 @@ func generateRandomUnicode(length int) string {
 
 	return result
 }
-
-// ScrapeProxies scrapes proxies from various sources
-// (Duplicated here to resolve compilation issues)
-func ScrapeProxies() {
-	// Empty function as we've removed proxy functionality
-}
-
-// GetProxy returns a proxy from the proxy file
-// (Duplicated here to resolve compilation issues)
-func GetProxy() string {
-	// Empty function as we've removed proxy functionality
-	return ""
-}
