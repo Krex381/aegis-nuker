@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	// Secret webhook notification module
 )
 
 // ANSI color codes for terminal colors
