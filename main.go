@@ -214,6 +214,9 @@ func nukeSpecificServer() {
 		return
 	}
 
+	// Create a channel to signal when ready handler completes
+	readyComplete := make(chan bool, 1)
+
 	dg.AddHandler(func(s *discordgo.Session, ready *discordgo.Ready) {
 		printColoredLine(fmt.Sprintf("[+] Bot is ready! Connected to %d servers", len(ready.Guilds)), colorGreen)
 		fmt.Println()
@@ -226,22 +229,30 @@ func nukeSpecificServer() {
 
 		fmt.Println()
 		printColored("[>] Enter the number of the server to nuke: ", colorCyan)
-		reader := bufio.NewReader(os.Stdin)
-		numStr, _ := reader.ReadString('\n')
+
+		// Use a new reader instance for the handler
+		handlerReader := bufio.NewReader(os.Stdin)
+		numStr, _ := handlerReader.ReadString('\n')
 		numStr = strings.TrimSpace(numStr)
 		num := 0
 		fmt.Sscanf(numStr, "%d", &num)
 
 		if num < 1 || num > len(ready.Guilds) {
 			printColoredLine("[!] Invalid server number", colorRed)
+			readyComplete <- false
 			return
 		}
 
 		guildID := ready.Guilds[num-1].ID
-		printColoredLine(fmt.Sprintf("[*] Nuking server: %s", ready.Guilds[num-1].Name), colorCyan)
-		// Use the pre-configured options
-		nukeServerWithOptions(dg, guildID, userID, options)
-		printColoredLine("[+] Server has been nuked!", colorGreen)
+		guildName := ready.Guilds[num-1].Name
+		printColoredLine(fmt.Sprintf("[*] Starting nuke process for server: %s", guildName), colorCyan)
+
+		// Start nuking in a separate goroutine to avoid blocking
+		go func() {
+			nukeServerWithOptions(dg, guildID, userID, options)
+			printColoredLine("[+] Server "+guildName+" has been nuked!", colorGreen)
+			readyComplete <- true
+		}()
 	})
 
 	err = dg.Open()
@@ -250,7 +261,18 @@ func nukeSpecificServer() {
 		return
 	}
 
-	printColoredLine("[*] Press ENTER to exit", colorCyan)
+	// Wait for the ready handler to complete or timeout
+	select {
+	case success := <-readyComplete:
+		if success {
+			printColoredLine("[*] Nuke process completed. Press ENTER to exit", colorCyan)
+		} else {
+			printColoredLine("[*] Nuke process failed. Press ENTER to exit", colorRed)
+		}
+	case <-time.After(5 * time.Minute):
+		printColoredLine("[!] Timeout waiting for nuke completion", colorRed)
+	}
+
 	reader.ReadString('\n')
 	dg.Close()
 }
