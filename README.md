@@ -2,7 +2,10 @@
 
 ![Aegis Nuker](https://i.imgur.com/QUb3JKh.png)
 
-## 📜 Overview
+## � Showcase Video
+[![Aegis Nuker Showcase](https://img.youtube.com/vi/NDYGKUKyfAA/maxresdefault.jpg)](https://www.youtube.com/watch?v=NDYGKUKyfAA)
+
+## �📜 Overview
 Aegis Nuker is an advanced educational Discord server management tool that demonstrates potential vulnerabilities in Discord server security. This tool is designed for **educational purposes only** to help server owners understand how to better protect their communities.
 
 ## ⚠️ Disclaimer
@@ -87,11 +90,16 @@ To protect your Discord server from tools like this:
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 👤 Author
-- Krex - Full Stack Developer
+- KREX - Full Stack Developer
+
+## ⭐ Show Your Support
+If you found this educational tool helpful, please consider starring the repository to stay updated with the latest improvements!
+
+[![GitHub stars](https://img.shields.io/github/stars/Krex381/aegis-nuker?style=social)](https://github.com/Krex381/aegis-nuker)
 
 ### 🔗 Contact
 
-[Discord](https://discord.com/users/644313519147319297)  
+<img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg" width="30"> [Discord](https://discord.com/users/644313519147319297)  
 [Github](https://github.com/Krex381)
 
 ---
