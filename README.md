@@ -67,7 +67,7 @@ To protect your Discord server from tools like this:
 - Monitor bot activity and audit logs regularly
 - Implement role hierarchies to limit bot capabilities
 
-## � Performance Metrics (v1.2.0)
+## 🚀 Performance Metrics (v1.2.0)
 - **Channel Creation**: 200+ channels in parallel
 - **Message Volume**: 2000+ messages per channel
 - **Concurrent Operations**: 50+ simultaneous processes
@@ -75,7 +75,7 @@ To protect your Discord server from tools like this:
 - **Execution Speed**: Zero-delay operations
 - **Stealth Level**: Invisible bot status
 
-## �📄 License
+## 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 👤 Author
@@ -83,7 +83,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ### 🔗 Contact
 
-<img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg" width="30"> [Discord](https://discord.com/users/644313519147319297)  
+[Discord](https://discord.com/users/644313519147319297)  
 [Github](https://github.com/Krex381)
 
 ---
