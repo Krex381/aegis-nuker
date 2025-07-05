@@ -83,15 +83,15 @@ To protect your Discord server from tools like this:
 - **Stealth Level**: Invisible bot status
 - **Server Modification**: Instant name change capability
 
-## �📄 License
+## 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 👤 Author
-- KREX - Lead Developer & Security Researcher
+- Krex - Full Stack Developer
 
 ### 🔗 Contact
 
-<img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg" width="30"> [Discord](https://discord.com/users/644313519147319297)  
+[Discord](https://discord.com/users/644313519147319297)  
 [Github](https://github.com/Krex381)
 
 ---
