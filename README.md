@@ -1,11 +1,9 @@
 # Aegis Nuker 1.2.1  
 
-![Aegis Nuker](https://i.imgur.com/QUb3JKh.png)
-
-## � Showcase Video
+## Showcase Video
 [![Aegis Nuker Showcase](https://img.youtube.com/vi/NDYGKUKyfAA/maxresdefault.jpg)](https://www.youtube.com/watch?v=NDYGKUKyfAA)
 
-## �📜 Overview
+## 📜 Overview
 Aegis Nuker is an advanced educational Discord server management tool that demonstrates potential vulnerabilities in Discord server security. This tool is designed for **educational purposes only** to help server owners understand how to better protect their communities.
 
 ## ⚠️ Disclaimer
