@@ -129,8 +129,7 @@ If you found this educational tool helpful, please consider starring the reposit
 [![GitHub stars](https://img.shields.io/github/stars/Krex381/aegis-nuker?style=social)](https://github.com/Krex381/aegis-nuker)
 
 ### 🔗 Contact
-
-<img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg" width="30"> [Discord](https://discord.com/users/644313519147319297)  
+ [Discord](https://discord.com/users/644313519147319297)  
 [Github](https://github.com/Krex381)
 
 ---
